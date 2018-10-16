@@ -100,3 +100,13 @@ void setModulator(int symOut) {
             return;
     }
 }
+
+void modulateOutArray::stopModulator(void) {
+    const int modPin = 13;
+    const int oscPin = 11;
+    thisFreq.stop();
+    pinMode(modPin, INPUT);
+    digitalWrite(modPin, LOW);
+    pinMode(oscPin, INPUT);
+    digitalWrite(oscPin, LOW);
+}
