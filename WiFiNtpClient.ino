@@ -134,6 +134,9 @@ void loop()
         if (isRunning) {
             modulate.doList(outArr);
         }
+        else {
+            modulate.stopModulator();
+        }
         delay(LOOPDELAY);
 #endif
     }
