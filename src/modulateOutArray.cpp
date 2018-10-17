@@ -15,7 +15,7 @@ bool modulateOutArray::begin(int hour) {
     if (thisFreq.isRunning()) {
         return true;
     }
-    if ((hour >= 20) && (hour < 2)) {
+    if ((hour >= 20) || (hour < 2)) {
         timerSel = thisFreq.begin(11);
         thisFreq.out( 60000 , 0 ) ;
 
