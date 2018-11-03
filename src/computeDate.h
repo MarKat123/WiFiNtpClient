@@ -1,3 +1,3 @@
 
-unsigned long computeDate(int outArr[]  , unsigned long);
+void computeDate(int outArr[]  , unsigned long);
 

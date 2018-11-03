@@ -4,7 +4,7 @@
 
 using namespace std;
 
-unsigned long computeDate(int outArr[], unsigned long timeSecs)
+void computeDate(int outArr[], unsigned long timeSecs)
 {
     bool leapYear = false;
 
@@ -22,16 +22,17 @@ unsigned long computeDate(int outArr[], unsigned long timeSecs)
     long secsLeft;
     long leapYearBase;
 
-    const int timeZoneAdj = -4 * hourSecs;
+    //const int timeZoneAdj = -4 * hourSecs;
+    // const int timeZoneAdj = 0;
 
-    timeSecs = timeSecs+timeZoneAdj;         // Adjust UTC to local
-                                             // To Do:  figure out how to adjust for DST
-                                             // before moving on to the next calculations
-                                             // or maybe assume DST adjustment now and readjust 
-                                             // if not DST?   To Do.                                             
+    // timeSecs = timeSecs+timeZoneAdj;         // Adjust UTC to local
+    //                                          // To Do:  figure out how to adjust for DST
+    //                                          // before moving on to the next calculations
+    //                                          // or maybe assume DST adjustment now and readjust 
+    //                                          // if not DST?   To Do.                                             
                                              
                                              
-                                        // if not DST?   To Do.                                            
+    //                                     // if not DST?   To Do.                                            
 
     leapYearBase = timeSecs/fourLeapSecs;
     secsLeft     = timeSecs % fourLeapSecs;
@@ -46,7 +47,7 @@ unsigned long computeDate(int outArr[], unsigned long timeSecs)
     }
 
     year = year + 4 * leapYearBase;
-    yearDays = secsLeft/daySecs+1;           // current partial day counts as 1, day of year starts at 1
+    yearDays = (secsLeft/daySecs) + 1;           // current partial day counts as a day
     secsLeft = secsLeft % daySecs;
 
     if (leapYear==true) {
@@ -144,6 +145,6 @@ unsigned long computeDate(int outArr[], unsigned long timeSecs)
     outArr[Min]  = mins;
     outArr[Sec]  = secsLeft;
 
-    return secsLeft;
+    return;
 
 }

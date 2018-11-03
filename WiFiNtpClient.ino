@@ -30,28 +30,30 @@ int count = 0;
 int rcvCount = 0; // timing until packet recieved
 int ii;
 
-unsigned long secsLeft;
-
 // A UDP instance to let us send and receive packets over UDP
 WiFiUDP Udp;
+modulateOutArray modulate;
 
 void setup()
 {
     // Open serial communications and wait for port to open:
-    Serial.begin(115200);
+    //Serial.begin(115200);
 
     // check for the presence of the shield:
-    if (WiFi.status() == WL_NO_SHIELD)
-    {
-        Serial.println("WiFi shield not present");
-        // don't continue:
-        while (true)
-        ;
-    }
+    // if (WiFi.status() == WL_NO_SHIELD)
+    // {
+    //     Serial.println("WiFi shield not present");
+    //     // don't continue:
+    //     while (true)
+    //     ;
+    // }
 
     // attempt to connect to WiFi network:
+
+    pinMode(LED_BUILTIN, OUTPUT);
     while (status != WL_CONNECTED)
     {
+        modulate.blink();
         status = WiFi.begin(homessid, homepass);
         delay(5000);
         if (status != WL_CONNECTED) {
@@ -60,10 +62,10 @@ void setup()
         }
     }
 
-    Serial.println("Connected to wifi");
-    printWiFiStatus();
+    // Serial.println("Connected");
+    // printWiFiStatus();
 
-    Serial.println("\nStarting connection to server...");
+    // Serial.println("\nStarting connection to server...");
     delay(1000); // Not sure that this helps before the UDP connection is sent
     Udp.begin(localPort);
 }
@@ -77,31 +79,28 @@ void loop()
     const int WAITLIMIT = 200;
     int delaycount = 0;
 
-    sendNTPpacket(timeServer); // send an NTP packet to a time server
 
+    sendNTPpacket(timeServer); // send an NTP packet to a time server
+    modulate.setBlinkVal(LOW); 
+    
     while (!Udp.parsePacket())
     {
+        modulate.blink(); 
         delay(DELAYINCREMENT);
         delaycount = delaycount + DELAYINCREMENT;
         if (delaycount > WAITLIMIT)
         {
-            Serial.print(++count);
-            Serial.print("  No Packet in ");
-            Serial.print(WAITLIMIT);
-            Serial.println(" ms");
             break;
         }
     }
-
     if (delaycount <= WAITLIMIT)
     {
-        Serial.print("\nSent ");
-        Serial.print(++count);
-        Serial.print("  Packet ");
-        Serial.print(++rcvCount);
-        Serial.print(" Received in ");
-        Serial.print(delaycount);
-        Serial.println(" ms");
+        // Serial.print(++count);
+        // Serial.print(" requests ");
+        // Serial.print(++rcvCount);
+        // Serial.print(" Received in ");
+        // Serial.print(delaycount);
+        // Serial.println(" ms");
 
         // We've received a packet, read the data from it
         Udp.read(packetBuffer, NTP_PACKET_SIZE); // read the packet into the buffer
@@ -116,30 +115,24 @@ void loop()
         unsigned long secsSince1900 = highWord << 16 | lowWord;
 
         memset(outArr, 0, sizeof(outArr));
-        // move ahead to next minute, we'll have to finshis this one
+        // move ahead to next minute, we'll have to finish this one
         // out to hit the next minute at the 00 second mark
 
-        secsSince1900 = secsSince1900 + 60;
-
-        secsLeft = computeDate(outArr, secsSince1900);
+        secsSince1900 += 60;
+        computeDate(outArr, secsSince1900);
 #ifdef TEST
-        Serial.print("\nSeconds: ");
-        Serial.print(secsLeft);
         printTestResults(outArr);
-    
-#else 
-        modulateOutArray modulate;
-
+#endif
+     
         isRunning = modulate.begin(outArr[Hour]);
         if (isRunning) {
+            //Serial.println("isRunning");
+            modulate.setBlinkVal(HIGH);
             modulate.doList(outArr);
         }
-        else {
-            modulate.stopModulator();
-        }
         delay(LOOPDELAY);
-#endif
     }
+    modulate.blink();
     // wait REQUESTDELAY mS before asking for the time again
     delay(REQUESTDELAY);
     // 

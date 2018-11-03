@@ -6,10 +6,12 @@ class modulateOutArray
     bool begin(int);
     void doList(int outArray[]);
     void stopModulator(void);
+    void blink(void);
+    int timerSel ;
+    void setBlinkVal(int);
     
   private:
     int hour;
-    int timerSel ;
     int ii, symbol;
     
  
